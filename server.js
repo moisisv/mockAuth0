@@ -27,6 +27,14 @@ const USERS = [
     nickname: "user1",
     picture: "https://via.placeholder.com/150",
     email_verified: true,
+    user_metadata: {
+      plan: "basic",
+      preferences: { theme: "light" },
+    },
+    app_metadata: {
+      roles: ["user"],
+      permissions: ["read:data"],
+    },
   },
   {
     user_id: "auth0|user2",
@@ -36,6 +44,14 @@ const USERS = [
     nickname: "user2",
     picture: "https://via.placeholder.com/150",
     email_verified: true,
+    user_metadata: {
+      plan: "premium",
+      preferences: { theme: "dark" },
+    },
+    app_metadata: {
+      roles: ["user", "manager"],
+      permissions: ["read:data", "write:data"],
+    },
   },
   {
     user_id: "auth0|admin",
@@ -46,6 +62,13 @@ const USERS = [
     picture: "https://via.placeholder.com/150",
     email_verified: true,
     roles: ["admin"],
+    user_metadata: {
+      admin_level: "super",
+    },
+    app_metadata: {
+      roles: ["admin"],
+      permissions: ["all"],
+    },
   },
 ];
 
@@ -66,6 +89,16 @@ function generateToken(user) {
 
   if (user.roles) {
     payload.roles = user.roles;
+  }
+
+  // Add metadata as namespaced claims (Auth0 standard practice)
+  // https://auth0.com/docs/secure/tokens/json-web-tokens/create-custom-claims
+  const namespace = CONFIG.issuer; // Using issuer as namespace base
+  if (user.user_metadata) {
+    payload[`${namespace}user_metadata`] = user.user_metadata;
+  }
+  if (user.app_metadata) {
+    payload[`${namespace}app_metadata`] = user.app_metadata;
   }
 
   return jwt.sign(payload, CONFIG.secret);
@@ -218,7 +251,7 @@ app.get("/api/v2/users", (req, res) => {
     });
   }
 
-  // Return users without passwords
+  // Return users without passwords, but with metadata
   const safeUsers = USERS.map(({ password, ...user }) => user);
   res.json(safeUsers);
 });
