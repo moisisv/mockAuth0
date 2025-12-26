@@ -5,12 +5,12 @@ services:
     build: .
     container_name: mock-auth0
     ports:
-      - "3000:3000"
+      - "9999:9999"
     environment:
-      - PORT=3000
-      - AUTH0_DOMAIN=localhost:3000
-      - AUTH0_ISSUER=http://mock-auth0:3000/
-      - AUTH0_AUDIENCE=http://localhost:3000/api
+      - PORT=9999
+      - AUTH0_DOMAIN=localhost:9999
+      - AUTH0_ISSUER=http://mock-auth0:9999/
+      - AUTH0_AUDIENCE=http://localhost:9999/api
       - JWT_SECRET=your-secret-key-here-change-in-production
       - TOKEN_EXPIRY=24h
     healthcheck:
@@ -21,7 +21,7 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://localhost:3000/health",
+          "http://localhost:9999/health",
         ]
       interval: 30s
       timeout: 3s

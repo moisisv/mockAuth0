@@ -35,7 +35,7 @@ docker-compose down
 docker build -t mock-auth0 .
 
 # Run the container
-docker run -p 3000:3000 --name mock-auth0 mock-auth0
+docker run -p 9999:9999 --name mock-auth0 mock-auth0
 
 # Stop and remove
 docker stop mock-auth0 && docker rm mock-auth0
@@ -71,13 +71,13 @@ The service comes with three pre-configured users:
 **POST** `/oauth/token`
 
 ```bash
-curl -X POST http://localhost:3000/oauth/token \
+curl -X POST http://localhost:9999/oauth/token \
   -H "Content-Type: application/json" \
   -d '{
     "grant_type": "password",
     "username": "user1@example.com",
     "password": "password123",
-    "audience": "http://localhost:3000/api"
+    "audience": "http://localhost:9999/api"
   }'
 ```
 
@@ -97,7 +97,7 @@ Response:
 **GET** `/userinfo`
 
 ```bash
-curl http://localhost:3000/userinfo \
+curl http://localhost:9999/userinfo \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
@@ -119,7 +119,7 @@ Response:
 **POST** `/verify`
 
 ```bash
-curl -X POST http://localhost:3000/verify \
+curl -X POST http://localhost:9999/verify \
   -H "Content-Type: application/json" \
   -d '{"token": "YOUR_ACCESS_TOKEN"}'
 ```
@@ -142,7 +142,7 @@ Response:
 **GET** `/api/v2/users`
 
 ```bash
-curl http://localhost:3000/api/v2/users \
+curl http://localhost:9999/api/v2/users \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
@@ -151,7 +151,7 @@ curl http://localhost:3000/api/v2/users \
 **GET** `/api/v2/users/:id`
 
 ```bash
-curl http://localhost:3000/api/v2/users/auth0|user1 \
+curl http://localhost:9999/api/v2/users/auth0|user1 \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
@@ -160,7 +160,7 @@ curl http://localhost:3000/api/v2/users/auth0|user1 \
 **GET** `/.well-known/openid-configuration`
 
 ```bash
-curl http://localhost:3000/.well-known/openid-configuration
+curl http://localhost:9999/.well-known/openid-configuration
 ```
 
 ### 7. JWKS
@@ -168,7 +168,7 @@ curl http://localhost:3000/.well-known/openid-configuration
 **GET** `/.well-known/jwks.json`
 
 ```bash
-curl http://localhost:3000/.well-known/jwks.json
+curl http://localhost:9999/.well-known/jwks.json
 ```
 
 ### 8. Health Check
@@ -176,17 +176,17 @@ curl http://localhost:3000/.well-known/jwks.json
 **GET** `/health`
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:9999/health
 ```
 
 ## Environment Variables
 
 | Variable       | Default                   | Description           |
 | -------------- | ------------------------- | --------------------- |
-| PORT           | 3000                      | Server port           |
-| AUTH0_DOMAIN   | localhost:3000            | Auth0 domain          |
-| AUTH0_ISSUER   | http://localhost:3000/    | Token issuer          |
-| AUTH0_AUDIENCE | http://localhost:3000/api | Token audience        |
+| PORT           | 9999                      | Server port           |
+| AUTH0_DOMAIN   | localhost:9999            | Auth0 domain          |
+| AUTH0_ISSUER   | http://localhost:9999/    | Token issuer          |
+| AUTH0_AUDIENCE | http://localhost:9999/api/v2/ | Token audience        |
 | JWT_SECRET     | mock-auth0-secret-key...  | JWT signing secret    |
 | TOKEN_EXPIRY   | 24h                       | Token expiration time |
 
@@ -199,9 +199,9 @@ Point your application to use the mock Auth0 service:
 ```javascript
 // Example for auth0-js
 const auth0 = new auth0.WebAuth({
-  domain: "localhost:3000",
+  domain: "localhost:9999",
   clientID: "mock-client-id",
-  audience: "http://localhost:3000/api",
+  audience: "http://localhost:9999/api",
   redirectUri: "http://localhost:8080/callback",
   responseType: "token id_token",
   scope: "openid profile email",
@@ -217,8 +217,8 @@ services:
   your-app:
     image: your-app:latest
     environment:
-      - AUTH0_DOMAIN=mock-auth0:3000
-      - AUTH0_ISSUER=http://mock-auth0:3000/
+      - AUTH0_DOMAIN=mock-auth0:9999
+      - AUTH0_ISSUER=http://mock-auth0:9999/
     networks:
       - app-network
     depends_on:
@@ -242,7 +242,7 @@ networks:
 const axios = require("axios");
 
 // Login
-const loginResponse = await axios.post("http://localhost:3000/oauth/token", {
+const loginResponse = await axios.post("http://localhost:9999/oauth/token", {
   grant_type: "password",
   username: "user1@example.com",
   password: "password123",
@@ -251,7 +251,7 @@ const loginResponse = await axios.post("http://localhost:3000/oauth/token", {
 const { access_token } = loginResponse.data;
 
 // Get user info
-const userInfo = await axios.get("http://localhost:3000/userinfo", {
+const userInfo = await axios.get("http://localhost:9999/userinfo", {
   headers: { Authorization: `Bearer ${access_token}` },
 });
 
@@ -264,7 +264,7 @@ console.log(userInfo.data);
 import requests
 
 # Login
-response = requests.post('http://localhost:3000/oauth/token', json={
+response = requests.post('http://localhost:9999/oauth/token', json={
     'grant_type': 'password',
     'username': 'user1@example.com',
     'password': 'password123'
@@ -274,7 +274,7 @@ access_token = response.json()['access_token']
 
 # Get user info
 user_info = requests.get(
-    'http://localhost:3000/userinfo',
+    'http://localhost:9999/userinfo',
     headers={'Authorization': f'Bearer {access_token}'}
 )
 
@@ -285,13 +285,13 @@ print(user_info.json())
 
 ```bash
 # Login and save token
-TOKEN=$(curl -s -X POST http://localhost:3000/oauth/token \
+TOKEN=$(curl -s -X POST http://localhost:9999/oauth/token \
   -H "Content-Type: application/json" \
   -d '{"grant_type":"password","username":"user1@example.com","password":"password123"}' \
   | jq -r '.access_token')
 
 # Use token
-curl http://localhost:3000/userinfo \
+curl http://localhost:9999/userinfo \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -312,9 +312,9 @@ jobs:
       mock-auth0:
         image: mock-auth0:latest
         ports:
-          - 3000:3000
+          - 9999:9999
         options: >-
-          --health-cmd "wget --quiet --tries=1 --spider http://localhost:3000/health || exit 1"
+          --health-cmd "wget --quiet --tries=1 --spider http://localhost:9999/health || exit 1"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -324,12 +324,12 @@ jobs:
 
       - name: Wait for Mock Auth0
         run: |
-          timeout 30 bash -c 'until curl -f http://localhost:3000/health; do sleep 1; done'
+          timeout 30 bash -c 'until curl -f http://localhost:9999/health; do sleep 1; done'
 
       - name: Run tests
         env:
-          AUTH0_DOMAIN: localhost:3000
-          AUTH0_ISSUER: http://localhost:3000/
+          AUTH0_DOMAIN: localhost:9999
+          AUTH0_ISSUER: http://localhost:9999/
         run: npm test
 ```
 

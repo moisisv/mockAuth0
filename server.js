@@ -9,9 +9,9 @@ app.use(cors());
 
 // Configuration
 const CONFIG = {
-  domain: process.env.AUTH0_DOMAIN || "localhost:3000",
-  issuer: process.env.AUTH0_ISSUER || "http://localhost:3000/",
-  audience: process.env.AUTH0_AUDIENCE || "http://localhost:3000/api",
+  domain: process.env.AUTH0_DOMAIN || "localhost:9999",
+  issuer: process.env.AUTH0_ISSUER || "http://localhost:9999/",
+  audience: process.env.AUTH0_AUDIENCE || "http://localhost:9999/api/v2/",
   secret:
     process.env.JWT_SECRET || "mock-auth0-secret-key-change-in-production",
   tokenExpiry: process.env.TOKEN_EXPIRY || "24h",
@@ -292,7 +292,7 @@ app.get("/health", (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9999;
 app.listen(PORT, () => {
   console.log(`Mock Auth0 service running on port ${PORT}`);
   console.log(`Domain: ${CONFIG.domain}`);
