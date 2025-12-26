@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  mock-auth0:
+    build: .
+    container_name: mock-auth0
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - AUTH0_DOMAIN=localhost:3000
+      - AUTH0_ISSUER=http://mock-auth0:3000/
+      - AUTH0_AUDIENCE=http://localhost:3000/api
+      - JWT_SECRET=your-secret-key-here-change-in-production
+      - TOKEN_EXPIRY=24h
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/health",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
