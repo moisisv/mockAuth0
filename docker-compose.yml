@@ -9,8 +9,8 @@ services:
     environment:
       - PORT=9999
       - AUTH0_DOMAIN=localhost:9999
-      - AUTH0_ISSUER=http://mock-auth0:9999/
-      - AUTH0_AUDIENCE=http://localhost:9999/api
+      - AUTH0_ISSUER=https://localhost:9999/
+      - AUTH0_AUDIENCE=https://localhost:9999/api
       - JWT_SECRET=your-secret-key-here-change-in-production
       - TOKEN_EXPIRY=24h
     healthcheck:
@@ -21,15 +21,16 @@ services:
           "--quiet",
           "--tries=1",
           "--spider",
-          "http://localhost:9999/health",
+          "--no-check-certificate",
+          "https://localhost:9999/health",
         ]
       interval: 30s
       timeout: 3s
       retries: 3
       start_period: 5s
-    networks:
-      - app-network
+#     networks:
+#       - app-network
 
-networks:
-  app-network:
-    driver: bridge
+# networks:
+#   app-network:
+#     driver: bridge

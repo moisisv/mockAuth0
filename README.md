@@ -109,7 +109,7 @@ Response:
   "email": "user1@example.com",
   "name": "Test User 1",
   "nickname": "user1",
-  "picture": "https://via.placeholder.com/150",
+  "picture": "https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortFlat&accessoriesType=Kurt&hairColor=Auburn&facialHairType=Blank&clotheType=ShirtScoopNeck&clotheColor=Heather&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light",
   "email_verified": true
 }
 ```
